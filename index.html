@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Tema 4 — Ley del Consell (Ley 5/1983) | Opositar en Valencia</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --naranja: #d97706;
+    --naranja-claro: #fef3c7;
+    --naranja-borde: #f59e0b;
+    --azul-oscuro: #1e293b;
+    --texto: #374151;
+    --texto-suave: #6b7280;
+    --borde: #e5e7eb;
+    --fondo: #fafaf9;
+    --blanco: #ffffff;
+    --verde: #166534;
+    --verde-bg: #f0fdf4;
+    --verde-borde: #86efac;
+    --rojo: #991b1b;
+    --rojo-bg: #fef2f2;
+    --rojo-borde: #fca5a5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--fondo); color: var(--texto); min-height: 100vh; font-size: 16px; line-height: 1.6; }
+  header { background: var(--blanco); border-bottom: 1px solid var(--borde); padding: 0; }
+  .header-top { max-width: 860px; margin: 0 auto; padding: 1.4rem 1.5rem 1rem; display: flex; align-items: flex-start; gap: 1.2rem; }
+  .header-logo { width: 48px; height: 48px; border-radius: 8px; object-fit: contain; flex-shrink: 0; }
+  .header-textos { flex: 1; }
+  .header-site { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--naranja); font-weight: 600; margin-bottom: 3px; }
+  .header-titulo { font-family: 'Lora', serif; font-size: clamp(1.25rem, 3.5vw, 1.75rem); font-weight: 700; color: var(--azul-oscuro); line-height: 1.2; }
+  .header-sub { font-size: 0.88rem; color: var(--texto-suave); margin-top: 4px; }
+  .header-meta { background: var(--naranja-claro); border-top: 1px solid #fde68a; padding: 0.55rem 1.5rem; }
+  .header-meta-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; font-size: 0.83rem; color: #92400e; font-weight: 500; }
+  .barra-wrap { position: sticky; top: 0; z-index: 100; background: var(--blanco); border-bottom: 1px solid var(--borde); padding: 0.6rem 1.5rem; box-shadow: 0 1px 6px rgba(0,0,0,0.05); }
+  .barra-inner { max-width: 860px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; }
+  .barra-track { flex: 1; height: 6px; background: #f3f4f6; border-radius: 99px; overflow: hidden; }
+  .barra-fill { height: 100%; background: var(--naranja); border-radius: 99px; transition: width 0.35s ease; width: 0%; }
+  .barra-num { font-size: 13px; font-weight: 600; color: var(--azul-oscuro); white-space: nowrap; min-width: 52px; }
+  .barra-score { font-size: 13px; color: var(--texto-suave); white-space: nowrap; }
+  .barra-score .ok { color: var(--verde); font-weight: 600; }
+  .barra-score .ko { color: var(--rojo); font-weight: 600; }
+  main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+  .card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 1.5rem 1.6rem; margin-bottom: 1.4rem; transition: box-shadow 0.2s; }
+  .card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.06); }
+  .card-num { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--naranja); margin-bottom: 0.5rem; }
+  .card-pregunta { font-family: 'Lora', serif; font-size: 1rem; font-weight: 600; line-height: 1.55; color: var(--azul-oscuro); margin-bottom: 1.1rem; }
+  .opciones { display: flex; flex-direction: column; gap: 0.45rem; }
+  .opcion { display: flex; align-items: flex-start; gap: 0.7rem; padding: 0.7rem 1rem; border: 1.5px solid var(--borde); border-radius: 7px; cursor: pointer; background: var(--blanco); text-align: left; font-family: 'Source Sans 3', sans-serif; font-size: 0.93rem; color: var(--texto); line-height: 1.5; transition: border-color 0.15s, background 0.15s; width: 100%; }
+  .opcion:hover:not(:disabled) { border-color: var(--naranja-borde); background: var(--naranja-claro); }
+  .opcion .letra { font-weight: 700; color: var(--naranja); min-width: 18px; font-size: 0.85rem; margin-top: 2px; flex-shrink: 0; }
+  .opcion.correcta { border-color: var(--verde-borde); background: var(--verde-bg); color: var(--verde); }
+  .opcion.correcta .letra { color: #15803d; }
+  .opcion.incorrecta { border-color: var(--rojo-borde); background: var(--rojo-bg); color: var(--rojo); }
+  .opcion.incorrecta .letra { color: var(--rojo); }
+  .opcion:disabled { cursor: default; }
+  .explicacion { display: none; margin-top: 1rem; padding: 0.9rem 1rem 0.9rem 1.1rem; background: #fffbeb; border-left: 3px solid var(--naranja); border-radius: 0 6px 6px 0; font-size: 0.875rem; line-height: 1.65; color: var(--texto); }
+  .explicacion.visible { display: block; animation: fadeIn 0.22s ease; }
+  .explicacion strong { color: var(--azul-oscuro); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  .resultado { display: none; background: var(--blanco); border: 1px solid var(--borde); border-radius: 12px; padding: 2.5rem 2rem 2rem; margin: 1.5rem 0 2rem; text-align: center; }
+  .resultado.visible { display: block; animation: fadeIn 0.3s ease; }
+  .resultado-eyebrow { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--naranja); font-weight: 600; margin-bottom: 0.5rem; }
+  .resultado h2 { font-family: 'Lora', serif; font-size: 1.75rem; font-weight: 700; color: var(--azul-oscuro); margin-bottom: 0.3rem; }
+  .resultado-nota { font-size: 3.2rem; font-weight: 700; color: var(--azul-oscuro); line-height: 1; margin: 1rem 0 0.3rem; font-family: 'Lora', serif; }
+  .resultado-nota span { color: var(--naranja); }
+  .calif-badge { display: inline-block; padding: 5px 16px; border-radius: 99px; font-size: 0.9rem; font-weight: 600; margin: 0.6rem 0 1.5rem; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 0 0 1.5rem; }
+  .stat { background: var(--fondo); border: 1px solid var(--borde); border-radius: 8px; padding: 0.9rem 0.5rem; }
+  .stat-num { font-size: 1.9rem; font-weight: 700; font-family: 'Lora', serif; }
+  .stat-lab { font-size: 0.78rem; color: var(--texto-suave); margin-top: 2px; }
+  .resultado-hint { font-size: 0.85rem; color: var(--texto-suave); margin-bottom: 1.2rem; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 0.7rem 1.6rem; border-radius: 7px; font-family: 'Source Sans 3', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.18s; text-decoration: none; }
+  .btn-naranja { background: var(--naranja); color: white; }
+  .btn-naranja:hover { background: #b45309; transform: translateY(-1px); }
+  .divider { text-align: center; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--texto-suave); margin: 2rem 0 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--borde); }
+  @media (max-width: 580px) { main { padding: 1.2rem 1rem 4rem; } .card { padding: 1.1rem 1.1rem; } .stats { grid-template-columns: 1fr 1fr; } .header-top { padding: 1rem; gap: 0.8rem; } .header-meta { padding: 0.5rem 1rem; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <img class="header-logo"
+      src="https://opositorgva.wordpress.com/wp-content/uploads/2024/04/cropped-opositar-en-valencia-logo-sin-fondo.png"
+      alt="Opositar en Valencia"
+      onerror="this.style.display='none'">
+    <div class="header-textos">
+      <div class="header-site">Opositar en Valencia · GVA</div>
+      <div class="header-titulo">Tema 4 — La Ley del Consell (Ley 5/1983)</div>
+      <div class="header-sub">President, Consell, Consellerías y Consellers · Subalterno APT-APF</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="header-meta-inner">
+      <span>📋 50 preguntas</span>
+      <span>🎯 Nivel medio-alto</span>
+      <span>🔀 Orden aleatorio en cada intento</span>
+      <span>✅ Explicación en cada respuesta</span>
+    </div>
+  </div>
+</header>
+
+<div class="barra-wrap">
+  <div class="barra-inner">
+    <div class="barra-track"><div class="barra-fill" id="barraFill"></div></div>
+    <span class="barra-num" id="barraNum">0 / 50</span>
+    <span class="barra-score"><span class="ok" id="scoreOk">✓ 0</span> &nbsp;<span class="ko" id="scoreKo">✗ 0</span></span>
+  </div>
+</div>
+
+<main id="mainContent"></main>
+
+<script>
+const BANCO = [
+  {
+    p: "Según el artículo 1 de la Ley del Consell, ¿qué doble condición ostenta el President de la Generalitat?",
+    ops: ["President de la Generalitat y President de Les Corts Valencianes", "President de la Generalitat y también President del Consell", "President de la Generalitat y Jefe de la Administración autonómica", "President de la Generalitat y representante del Estado en materia de seguridad"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 1 de la Ley del Consell establece que el President de la Generalitat es también President del Consell. En esa doble condición dirige la acción del Consell, coordina sus funciones y ostenta la más alta representación de la Comunitat Valenciana, así como la ordinaria del Estado en ésta."
+  },
+  {
+    p: "De acuerdo con el artículo 2.2 de la Ley del Consell, ¿quién propone el candidato a la presidencia de la Generalitat tras la renovación de Les Corts?",
+    ops: ["El Presidente del Gobierno del Estado, previo acuerdo del Senado", "El Presidente de Les Corts, previa consulta con los representantes de los grupos políticos con representación parlamentaria", "El Consell en funciones, por acuerdo adoptado en sesión extraordinaria", "El grupo parlamentario con mayor número de escaños, de forma automática"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.2 de la Ley del Consell atribuye al Presidente de Les Corts, previa consulta con los representantes de los grupos políticos, la función de proponer un candidato a la presidencia de la Generalitat, dando prioridad a quien haya obtenido mayor apoyo en dichas consultas."
+  },
+  {
+    p: "Según el artículo 2.4 de la Ley del Consell, ¿qué mayoría es necesaria en primera votación para la elección del President de la Generalitat?",
+    ops: ["Mayoría simple de los miembros de derecho de Les Corts", "Mayoría de tres quintos de los miembros de derecho de Les Corts", "Mayoría absoluta de los miembros de derecho de Les Corts", "Mayoría de dos tercios de los miembros de derecho de Les Corts"],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 2.4 de la Ley del Consell exige mayoría absoluta de los miembros de derecho de Les Corts en primera votación. Si no se logra, la votación se repite cuarenta y ocho horas después siendo suficiente la mayoría simple. Este esquema replica el modelo constitucional del art. 99.3 CE."
+  },
+  {
+    p: "¿Qué ocurre si, pasados dos meses desde la primera votación de investidura, ningún candidato obtiene la confianza de Les Corts, según el artículo 2.6 de la Ley del Consell?",
+    ops: ["El Consell en funciones convoca un referéndum autonómico", "El Presidente de Les Corts, por acuerdo de la Mesa, disuelve la Cámara y el President en funciones convoca nuevas elecciones", "El Gobierno del Estado designa un President provisional mediante Real Decreto", "El Tribunal Superior de Justicia de la Comunitat Valenciana asume las funciones ejecutivas de forma transitoria"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.6 de la Ley del Consell establece que si transcurridos dos meses desde la primera votación ningún candidato obtiene la confianza, el Presidente de Les Corts, por acuerdo de la Mesa, disolverá la Cámara y el President en funciones convocará nuevas elecciones. Es la solución ante el bloqueo institucional."
+  },
+  {
+    p: "Conforme al artículo 3 de la Ley del Consell, ¿en qué plazo debe publicarse el nombramiento del President elegido?",
+    ops: ["En el plazo de cinco días en el BOE y el DOCV", "En el plazo de diez días en el «Boletín Oficial del Estado» y en el «Diari Oficial de la Comunitat Valenciana»", "En el plazo de quince días exclusivamente en el DOCV", "En el plazo de veinte días hábiles en ambos diarios oficiales"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 3 de la Ley del Consell establece que, elegido el President, el Presidente de Les Corts lo comunicará al Rey para su nombramiento, y dicho nombramiento se publicará en el BOE y en el Diari Oficial de la Comunitat Valenciana en el plazo de diez días."
+  },
+  {
+    p: "¿Desde qué momento empieza a ejercer sus funciones el President electo, según el artículo 4 de la Ley del Consell?",
+    ops: ["Desde el día de su elección por Les Corts", "Desde el día de la publicación en el BOE de su nombramiento por el Rey", "Desde el día en que presta juramento o promesa ante Les Corts", "Desde el día siguiente a la publicación en el DOCV"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 4 de la Ley del Consell establece que el President electo comenzará a ejercer sus funciones a partir del día de la publicación en el «Boletín Oficial del Estado» de su nombramiento por el Rey. Esta fecha es el dies a quo del mandato efectivo."
+  },
+  {
+    p: "Según el artículo 5 de la Ley del Consell, ¿qué acto debe realizar el President tras su nombramiento y qué trámite tiene ese acto?",
+    ops: ["Prometer o jurar acatar la Constitución y el Estatuto en las primeras Corts celebradas en Valencia, y efectuar una «Proposición» de su programa sin debate", "Presentar su programa de gobierno ante el Congreso de los Diputados para su ratificación", "Firmar el acta de toma de posesión ante el Tribunal Superior de Justicia de la CV", "Someter su programa al debate de investidura en una segunda sesión parlamentaria"],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> El art. 5 de la Ley del Consell establece que el President debe prometer o jurar acatar la Constitución y el Estatuto de Autonomía en las primeras Corts celebradas en Valencia tras su nombramiento. En ese mismo acto efectuará una «Proposición» de su programa de gobierno sin que sea objeto de debate."
+  },
+  {
+    p: "¿Con qué actividades es incompatible el cargo de President de la Generalitat, según el artículo 6 de la Ley del Consell?",
+    ops: ["Con cualquier cargo público, incluida la condición de Diputado de Les Corts", "Con cualquier función pública que no derive de su cargo (excepto la de Diputado de Les Corts) y con cualquier actividad profesional o mercantil", "Solo con actividades empresariales o mercantiles de carácter privado", "Con cualquier cargo de representación en organismos internacionales"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 6 de la Ley del Consell establece que el cargo de President es incompatible con el ejercicio de cualquier otra función pública que no derive del cargo, excepto la de Diputado de Les Corts, y también con cualquier actividad profesional o mercantil. La condición de Diputado es la única excepción expresa."
+  },
+  {
+    p: "¿Ante quién es políticamente responsable el President de la Generalitat, según el artículo 7 de la Ley del Consell?",
+    ops: ["Ante el Gobierno del Estado y ante Les Corts de forma conjunta", "Ante Les Corts Valencianes", "Ante el pueblo valenciano directamente, mediante referéndum de revocación", "Ante el Consell en pleno"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 7 de la Ley del Consell establece con claridad que el President de la Generalitat es responsable políticamente ante Les Corts Valencianes. Esta responsabilidad se canaliza principalmente a través de la moción de censura y la cuestión de confianza previstas en el Estatuto de Autonomía."
+  },
+  {
+    p: "El artículo 8 de la Ley del Consell enumera las causas de cese del President. ¿Cuál de las siguientes NO figura entre ellas?",
+    ops: ["Por renovación de Les Corts a consecuencia de unas elecciones autonómicas", "Por aprobación de una moción de censura", "Por disolución voluntaria del Consell acordada por mayoría absoluta de sus miembros", "Por fallecimiento"],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 8 de la Ley del Consell enumera las causas de cese: renovación de Les Corts, moción de censura, denegación de cuestión de confianza, dimisión o renuncia, pérdida de la condición de Diputado, incompatibilidad no subsanada en diez días, incapacidad permanente declarada por Les Corts y fallecimiento. La disolución del Consell por sus propios miembros no existe como causa."
+  },
+  {
+    p: "Según el artículo 8 de la Ley del Consell, ¿qué plazo tiene el President para subsanar una incompatibilidad declarada por Les Corts antes de que se produzca su cese?",
+    ops: ["Cinco días", "Diez días", "Quince días", "Un mes"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 8.f) de la Ley del Consell establece como causa de cese la incompatibilidad declarada por Les Corts y no subsanada en el plazo de diez días. Este plazo otorga al President la posibilidad de corregir la situación de incompatibilidad antes de que se consume el cese."
+  },
+  {
+    p: "En los supuestos de incapacidad o fallecimiento del President, ¿quién asume sus funciones como más alto representante de la Comunitat y representante ordinario del Estado, según el artículo 8 de la Ley del Consell?",
+    ops: ["El Conseller más antiguo en el cargo", "El Presidente de Les Corts", "El Vicepresidente primero del Consell", "El Secretario del Consell"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 8 de la Ley del Consell establece que en los supuestos de incapacidad y fallecimiento, el Presidente de Les Corts asume las funciones del President como más alto representante de la Comunitat Valenciana y representante ordinario del Estado. Las funciones de President del Consell recaen en los Vicepresidentes según su orden."
+  },
+  {
+    p: "¿Cuál es el tratamiento protocolario que corresponde al President de la Generalitat según el artículo 9 de la Ley del Consell?",
+    ops: ["Excelentísimo señor", "Muy Honorable", "Ilustrísimo señor", "Honorable señor"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 9.a) de la Ley del Consell establece que el President de la Generalitat gozará del tratamiento de «muy honorable». Este tratamiento es el que distingue al máximo representante institucional de la Comunitat Valenciana y difiere del tratamiento de «honorable» que corresponde a los Consellers (art. 30.2)."
+  },
+  {
+    p: "Conforme al artículo 9 de la Ley del Consell, ¿qué prerrogativa tiene el President en cuanto a presidir actos?",
+    ops: ["Presidir únicamente los actos celebrados en la ciudad de Valencia", "Presidir todos los actos celebrados en el territorio de la Comunitat Valenciana a los que concurra, salvo lo dispuesto en la legislación del Estado", "Presidir los actos de las instituciones de la Generalitat, pero no los del Estado en la Comunitat", "Presidir los actos protocolarios siempre que no concurra ninguna autoridad del Estado"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 9.c) de la Ley del Consell establece que el President tiene la prerrogativa de presidir todos los actos celebrados en el territorio de la Comunitat Valenciana a los que concurra, salvo lo dispuesto en la legislación del Estado. Esta regla refleja la prelación protocolaria del President en su territorio."
+  },
+  {
+    p: "Según el artículo 10 de la Ley del Consell, ¿a quién corresponde firmar los Convenios y Acuerdos de cooperación con la Administración del Estado y las demás CCAA?",
+    ops: ["Al Conseller competente por razón de la materia del convenio", "Al President de la Generalitat", "Al Secretario del Consell, como fedatario de los acuerdos del Ejecutivo", "Al Consell en pleno, mediante acuerdo adoptado por mayoría absoluta"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 10.c) de la Ley del Consell atribuye al President de la Generalitat la función de firmar los Convenios y Acuerdos de cooperación con la Administración del Estado y las demás Comunidades Autónomas. Es una competencia propia del President como representante de la Comunitat."
+  },
+  {
+    p: "¿Qué función le atribuye el artículo 11 de la Ley del Consell al President como representante ordinario del Estado en la Comunitat Valenciana?",
+    ops: ["Ejecutar las sentencias del Tribunal Constitucional en el territorio valenciano", "Promulgar, en nombre del Rey, las Leyes de la Generalitat y disponer su publicación en el DOCV en el plazo de quince días de su aprobación", "Coordinar la actuación de las Fuerzas y Cuerpos de Seguridad del Estado en la Comunitat", "Ejercer el veto suspensivo sobre las leyes de Les Corts que vulneren competencias estatales"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 11 de la Ley del Consell establece que corresponde al President, en su condición de representante ordinario del Estado, promulgar en nombre del Rey las Leyes de la Generalitat y disponer lo necesario para su publicación en el DOCV en el plazo de quince días de su aprobación, y también en el BOE."
+  },
+  {
+    p: "Según el artículo 12.1 de la Ley del Consell, ¿cuál de las siguientes es una atribución del President en su condición de director y coordinador del Consell?",
+    ops: ["Aprobar los Presupuestos de la Generalitat y presentarlos a Les Corts", "Crear, modificar y suprimir las Consellerías y las Secretarías Autonómicas", "Nombrar a los magistrados del Tribunal Superior de Justicia de la CV", "Ejercer la potestad reglamentaria mediante Órdenes de la Presidencia"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 12.1.b) de la Ley del Consell atribuye al President la facultad de crear, modificar y suprimir las Consellerías y las Secretarías Autonómicas. Esta competencia organizativa es nuclear en su función de dirección del Gobierno autonómico y le permite adaptar la estructura del Ejecutivo a las necesidades políticas."
+  },
+  {
+    p: "¿A quién corresponde resolver los conflictos de atribuciones entre las distintas Consellerías, según el artículo 12.1 de la Ley del Consell?",
+    ops: ["Al Consell Jurídic Consultiu de la Comunitat Valenciana", "Al Secretario del Consell, como órgano de coordinación administrativa", "Al President de la Generalitat", "Al Tribunal Superior de Justicia de la Comunitat Valenciana"],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 12.1.j) de la Ley del Consell atribuye al President la facultad de resolver los conflictos de atribuciones entre las distintas Consellerías. Esta competencia es coherente con su función de dirección y coordinación del Consell y evita que los conflictos entre departamentos paralicen la acción del Gobierno."
+  },
+  {
+    p: "Conforme al artículo 12.1.m) de la Ley del Consell, ¿qué requisito previo se exige para que el President pueda disolver Les Corts y convocar elecciones?",
+    ops: ["La autorización de Les Corts por mayoría absoluta", "El previo acuerdo del Consell", "La propuesta del Presidente de Les Corts", "La comunicación previa al Delegado del Gobierno en la Comunitat"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 12.1.m) de la Ley del Consell establece que el President puede disolver Les Corts y convocar elecciones previo acuerdo del Consell. Este requisito de deliberación colectiva refuerza el carácter colegiado del Ejecutivo autonómico y garantiza que la disolución no sea una decisión unilateral del President."
+  },
+  {
+    p: "Según el artículo 13 de la Ley del Consell, ¿cuál es la definición legal del Consell?",
+    ops: ["El parlamento autonómico que ostenta la potestad legislativa de la Comunitat Valenciana", "El órgano colegiado que ostenta la potestad ejecutiva y reglamentaria y dirige la Administración de la Generalitat", "El órgano consultivo supremo de la Generalitat en materia jurídica y normativa", "El conjunto de todas las instituciones de autogobierno de la Comunitat Valenciana"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 13 de la Ley del Consell define el Consell como el órgano colegiado que ostenta la potestad ejecutiva y reglamentaria y dirige la Administración de la Generalitat. Esta definición delimita su naturaleza: es el Gobierno autonómico, titular del poder ejecutivo y de la capacidad reglamentaria."
+  },
+  {
+    p: "¿Cómo está compuesto el Consell, según el artículo 14 de la Ley del Consell?",
+    ops: ["Por el President, los Consellers y los Secretarios Autonómicos de forma permanente", "Por el President de la Generalitat, el Vicepresidente o Vicepresidentes (en su caso) y los Consellers", "Por el President, los Consellers y el Secretario del Consell con voz y voto", "Por el President, los Vicepresidentes, los Consellers y los Directores Generales con competencias ejecutivas"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 14 de la Ley del Consell establece que el Consell se compone del President, del Vicepresidente o Vicepresidentes (en su caso) y de los Consellers. Los Secretarios Autonómicos pueden asistir a las reuniones cuando sean convocados, pero no forman parte del Consell como miembros plenos."
+  },
+  {
+    p: "Según el artículo 15.1 de la Ley del Consell, ¿qué ocurre cuando hay Vicepresidentes del Consell y el President está ausente o enfermo?",
+    ops: ["Asume las funciones el Conseller más antiguo en el cargo", "Asumen las funciones de la Presidencia del Consell los Vicepresidentes según su orden", "Asume las funciones el Secretario del Consell hasta la recuperación del President", "Les Corts designan a un President provisional mediante votación de urgencia"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 15.1 de la Ley del Consell establece que los Vicepresidentes asumen las funciones de la Presidencia del Consell en caso de ausencia, vacante o enfermedad del President, según su orden. Si no hay Vicepresidentes, le sustituye el Conseller expresamente designado por el President o, en su defecto, el más antiguo en el cargo."
+  },
+  {
+    p: "¿Qué tipo de ausencias del President de la Generalitat deben comunicarse a Les Corts, según el artículo 15.1 de la Ley del Consell?",
+    ops: ["Todas las ausencias del territorio valenciano, con independencia de su duración", "Las ausencias temporales superiores a un mes", "Las ausencias superiores a quince días cuando sean fuera del territorio nacional", "Todas las ausencias de más de cuarenta y ocho horas del territorio de la Comunitat"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 15.1 de la Ley del Consell establece que las ausencias temporales del President de la Generalitat superiores a un mes se comunicarán a Les Corts. Esta obligación de transparencia permite al Parlamento autonómico conocer las situaciones de ejercicio delegado de las funciones presidenciales."
+  },
+  {
+    p: "¿Quién nombra al Secretario del Consell y de entre quiénes debe elegirlo el President, según el artículo 15.3 de la Ley del Consell?",
+    ops: ["El propio Consell en pleno, de entre los Directores Generales de mayor rango", "El President de la Generalitat, de entre los Vicepresidentes o los Consellers", "El Presidente de Les Corts, a propuesta del President de la Generalitat", "El Consell Jurídic Consultiu, mediante concurso de méritos entre funcionarios del grupo A"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 15.3 de la Ley del Consell establece que el President nombrará, entre los Vicepresidentes o los Consellers, un Secretario del Consell que ejercerá las funciones establecidas en la Ley, entre ellas la de levantar acta de los acuerdos del Consell (art. 22)."
+  },
+  {
+    p: "Según el artículo 16 de la Ley del Consell, ¿qué competencia en materia de política general corresponde al Consell en relación con las Diputaciones Provinciales?",
+    ops: ["Supervisar el presupuesto de las Diputaciones y autorizar sus inversiones más relevantes", "El ejercicio de las facultades que el Estatuto o Ley de Les Corts le atribuya en lo que se refiere a la actividad de las Diputaciones Provinciales y demás entes locales", "La facultad de disolver las Diputaciones Provinciales en caso de gestión gravemente dañosa para el interés general", "Aprobar los planes de ordenación territorial que afecten a dos o más provincias valencianas"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 16.c) de la Ley del Consell atribuye al Consell el ejercicio de las facultades que el Estatuto o las Leyes de Les Corts le atribuyan respecto a la actividad de las Diputaciones Provinciales y demás entes locales. El alcance concreto de estas facultades se determina por el bloque de constitucionalidad y la legislación de régimen local."
+  },
+  {
+    p: "En materia de funciones ejecutivas y administrativas, ¿qué competencia atribuye el artículo 17 de la Ley del Consell respecto al personal de alto rango?",
+    ops: ["Nombrar y separar a los altos cargos de la Administración de la Generalitat, a propuesta del Conseller correspondiente", "Convocar directamente las oposiciones para el acceso al Cuerpo Superior de Administración", "Determinar las bases de las convocatorias de personal directivo de la Generalitat", "Proponer al Gobierno del Estado el nombramiento de los Delegados del Gobierno en la Comunitat"],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> El art. 17.a) de la Ley del Consell establece que corresponde al Consell, en el ejercicio de sus funciones ejecutivas, nombrar y separar a los altos cargos de la Administración de la Generalitat, a propuesta del Conseller correspondiente. La propuesta del Conseller es un requisito formal previo a la decisión del Consell."
+  },
+  {
+    p: "Según el artículo 18.b) de la Ley del Consell, ¿puede el Consell retirar un proyecto de ley en cualquier momento de su tramitación ante Les Corts?",
+    ops: ["No, una vez presentado el proyecto, Les Corts tienen competencia exclusiva sobre su tramitación", "Sí, el Consell puede retirarlo en cualquier momento, siempre que no hubiere recaído acuerdo final de Les Corts", "Sí, pero solo durante los primeros treinta días desde su presentación en Les Corts", "No, el proyecto solo puede ser retirado con autorización de la Mesa de Les Corts"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 18.b) de la Ley del Consell establece que el Consell podrá retirar el proyecto de ley en cualquier momento de su tramitación ante Les Corts, siempre que no hubiere recaído acuerdo final de éstas. Este límite evita que el Consell retire proyectos cuando Les Corts ya han expresado su voluntad definitiva."
+  },
+  {
+    p: "¿Con cuánta antelación mínima al inicio del ejercicio presupuestario debe el Consell presentar el proyecto de ley de presupuestos a Les Corts, según el artículo 18.e) de la Ley del Consell?",
+    ops: ["Al menos un mes de antelación", "Al menos dos meses de antelación", "Al menos tres meses de antelación", "Al menos cuatro meses de antelación"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 18.e) de la Ley del Consell establece que el Consell elaborará los proyectos de ley de presupuestos de la Generalitat para ser presentados a Les Corts al menos con dos meses de antelación al comienzo del correspondiente ejercicio presupuestario. Este plazo garantiza tiempo suficiente para el debate parlamentario."
+  },
+  {
+    p: "Conforme al artículo 19 de la Ley del Consell, ¿qué atribución parlamentaria tiene el Consell en relación con las sesiones extraordinarias de Les Corts?",
+    ops: ["Puede disolver Les Corts y convocar sesiones extraordinarias simultáneamente", "Puede proponer a Les Corts, a través de su President, la celebración de sesiones extraordinarias, acompañando el orden del día propuesto", "Puede convocar directamente sesiones extraordinarias de Les Corts mediante Decreto del Consell", "Puede proponer sesiones extraordinarias solo cuando esté en funciones o en período intersesiones"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 19.a) de la Ley del Consell atribuye al Consell la facultad de proponer a Les Corts, a través de su President, la celebración de sesiones extraordinarias. En esta petición deberá figurar el orden del día propuesto para la sesión. La convocatoria definitiva corresponde a Les Corts, no al Consell."
+  },
+  {
+    p: "Según el artículo 20 de la Ley del Consell, ¿qué puede hacer el Consell en relación con los conflictos de competencia con el Estado u otras CCAA?",
+    ops: ["Solo puede comparecer ante el Tribunal Constitucional si es requerido por el Tribunal", "Puede acordar la interposición de recursos de inconstitucionalidad y plantear conflictos de competencia ante el Tribunal Constitucional", "Solo puede plantear conflictos de competencia si Les Corts lo autorizan previamente por mayoría de tres quintos", "No tiene legitimación para actuar ante el Tribunal Constitucional; solo puede hacerlo Les Corts"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 20 de la Ley del Consell atribuye al Consell la facultad de acordar la interposición de recursos de inconstitucionalidad, plantear conflictos de competencia ante el Tribunal Constitucional y acordar la comparecencia y personación en recursos y cuestiones de inconstitucionalidad que afecten a la Comunitat."
+  },
+  {
+    p: "¿Qué carácter tienen las sesiones del Consell según el artículo 23 de la Ley del Consell?",
+    ops: ["Carácter público, salvo las que versen sobre materias de seguridad interior", "Carácter reservado; solo se hará público el contenido de los acuerdos", "Carácter semipúblico, pudiendo asistir los medios de comunicación acreditados", "Carácter mixto: la parte deliberativa es reservada pero la votación es pública"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 23 de la Ley del Consell establece que las sesiones del Consell tendrán carácter reservado y solo se hará público el contenido de los acuerdos. Los documentos elevados a consideración del Consell tienen igualmente carácter reservado hasta que se adopte acuerdo sobre ellos. Este régimen contrasta con la publicidad de las sesiones plenarias de Les Corts."
+  },
+  {
+    p: "¿Qué son las Comisiones Delegadas del Consell y quién puede formar parte de ellas, según el artículo 24 de la Ley del Consell?",
+    ops: ["Son comisiones de control parlamentario integradas por Diputados de Les Corts y Consellers", "Son comisiones de carácter permanente o temporal para estudiar y resolver materias de interés común a algunos Departamentos; pueden integrarlas el President, Vicepresidentes, Consellers y Secretarios Autonómicos cuando se considere oportuno", "Son grupos de trabajo integrados por Directores Generales para preparar los proyectos de decreto", "Son comisiones de arbitraje entre Consellerías, presididas por el Consell Jurídic Consultiu"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 24 de la Ley del Consell establece que las Comisiones Delegadas son de carácter permanente o temporal, estudian y resuelven materias de interés común a varios Departamentos. Pueden formar parte de ellas el President, Vicepresidentes, Consellers y —cuando por la materia sea oportuno— los Secretarios Autonómicos."
+  },
+  {
+    p: "¿Qué finalidad tienen las Comisiones Interdepartamentales previstas en el artículo 25 de la Ley del Consell?",
+    ops: ["Sustituir al Consell en pleno durante los períodos intersesionales", "El estudio, coordinación, programación y propuestas de resolución de la actividad interdepartamental en materias sectoriales comunes, integradas por altos cargos de la Administración valenciana", "Controlar la ejecución presupuestaria de cada Conselleria de forma independiente", "Preparar los proyectos de decreto legislativo que el Consell eleve a Les Corts"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 25 de la Ley del Consell regula las Comisiones Interdepartamentales como órganos integrados por altos cargos de la Administración valenciana, destinados al estudio, coordinación, programación y propuestas de resolución de la actividad interdepartamental en materias sectoriales comunes."
+  },
+  {
+    p: "¿Quién preside la Comisión de Secretarios Autonómicos y Subsecretarios prevista en el artículo 26 de la Ley del Consell?",
+    ops: ["El Vicepresidente primero del Consell", "El miembro del Consell que ostente la condición de Secretario del Consell", "El Conseller de mayor antigüedad en el cargo", "El Presidente de Les Corts en representación del poder legislativo"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 26.3 de la Ley del Consell establece que la Comisión de Secretarios Autonómicos y Subsecretarios será presidida por el miembro del Consell que ostente la condición de Secretario del Consell. Esta comisión tiene por objeto preparar las reuniones del Consell y tratar cuestiones de interés común no atribuidas a otras comisiones."
+  },
+  {
+    p: "Conforme al artículo 27 de la Ley del Consell, ¿cómo se organiza la Administración de la Generalitat Valenciana?",
+    ops: ["En Departamentos territoriales divididos por provincias, al frente de cada uno un Delegado del Consell", "En Consellerías o Departamentos, al frente de los cuales hay un Conseller, miembro del Consell con funciones ejecutivas", "En Secretarías Autonómicas agrupadas por áreas de política pública, dirigidas por Secretarios Autonómicos", "En Agencias independientes coordinadas directamente por el President de la Generalitat"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 27 de la Ley del Consell establece que la Administración de la Generalitat se organiza en Consellerías o Departamentos, al frente de los cuales hay un Conseller que es miembro del Consell con funciones ejecutivas. Esta estructura departamental es la unidad organizativa básica del poder ejecutivo autonómico."
+  },
+  {
+    p: "Según el artículo 28.b) de la Ley del Consell, ¿qué función tienen los Consellers en relación con los altos cargos de su Departamento?",
+    ops: ["Nombrar y cesar directamente a todos los altos cargos de su Conselleria sin intervención del Consell", "Proponer al Consell el nombramiento y cese de altos cargos de su Departamento", "Proponer al President el nombramiento de los altos cargos, quien los nombra sin pasar por el Consell", "Aprobar por Orden de la Conselleria el nombramiento de todos los puestos de libre designación"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 28.b) de la Ley del Consell establece que los Consellers tienen la función de proponer al Consell el nombramiento y cese de los altos cargos de su Departamento. Es el Consell quien adopta formalmente el acuerdo de nombramiento o cese, aunque la iniciativa corresponde al titular de la Conselleria."
+  },
+  {
+    p: "¿En qué forma ejercen los Consellers la potestad reglamentaria en su ámbito departamental, según el artículo 28.e) de la Ley del Consell?",
+    ops: ["Mediante Decretos de la Conselleria refrendados por el President", "Mediante Órdenes de la Conselleria", "Mediante Resoluciones de la Dirección General competente", "Mediante Instrucciones de servicio publicadas en el DOCV"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 28.e) de la Ley del Consell establece que los Consellers ejercen la potestad reglamentaria en las materias propias de su Conselleria en forma de Órdenes de la Conselleria. Esta forma normativa es de rango inferior al Decreto del Consell y solo puede afectar a materias del ámbito competencial del Departamento."
+  },
+  {
+    p: "Conforme al artículo 28.h) de la Ley del Consell, ¿qué competencia tienen los Consellers en materia de recursos administrativos?",
+    ops: ["Resolver en vía administrativa los recursos interpuestos contra resoluciones de órganos de su Conselleria que no agoten la vía administrativa, salvo excepciones legales", "Resolver todos los recursos administrativos con independencia del órgano que dictó la resolución impugnada", "Interponer recursos de reposición contra las resoluciones del Consell que afecten a su Departamento", "Resolver únicamente los recursos de alzada contra actos de los Directores Generales de su Conselleria"],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> El art. 28.h) de la Ley del Consell establece que los Consellers resuelven en vía administrativa los recursos interpuestos contra resoluciones de organismos o autoridades de su Conselleria que no estén adscritos a una Secretaría Autonómica, o los de ésta cuando no agoten la vía administrativa, salvo excepciones legales."
+  },
+  {
+    p: "¿Quién nombra y separa a los Consellers, según el artículo 29.1 de la Ley del Consell?",
+    ops: ["Les Corts, mediante votación por mayoría simple", "El Consell en pleno, a propuesta del President", "El President de la Generalitat", "El Rey, a propuesta del President de la Generalitat"],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 29.1 de la Ley del Consell establece con claridad que los Consellers son nombrados y separados por el President de la Generalitat. Esta competencia es la expresión más directa del poder de configuración del Ejecutivo que la Ley atribuye al President y no requiere intervención de Les Corts ni del Consell en pleno."
+  },
+  {
+    p: "Según el artículo 29.2 de la Ley del Consell, ¿en qué supuesto cesan los Consellers por cese del President, y qué ocurre tras ese cese?",
+    ops: ["Cesan inmediatamente y sin posibilidad de prorrogar sus funciones en ningún caso", "Cesan por cese del President, pero continúan en sus funciones hasta la toma de posesión del nuevo Consell", "Cesan por cese del President y el Consell en pleno adopta acuerdo de prórroga por un máximo de treinta días", "Cesan al día siguiente de la publicación del nuevo nombramiento presidencial en el BOE"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 29.2.a) de la Ley del Consell establece que los Consellers cesan por cese del President, si bien continuarán en sus funciones hasta la toma de posesión del nuevo Consell. Esta regla garantiza la continuidad de la acción de gobierno durante el período de transición entre ejecutivos."
+  },
+  {
+    p: "¿Cuáles son las causas de cese de los Consellers enumeradas en el artículo 29.2 de la Ley del Consell?",
+    ops: ["Cese del President, dimisión aceptada, separación decidida por el President, incompatibilidad sobrevenida y fallecimiento", "Cese del President, moción de censura aprobada, renuncia ante Les Corts, incapacidad y fallecimiento", "Dimisión, pérdida de la condición de Diputado de Les Corts, incompatibilidad y fallecimiento", "Cese del President, dimisión, incompatibilidad sobrevenida y condena penal firme"],
+    c: 0,
+    exp: "<strong>Respuesta correcta: A.</strong> El art. 29.2 de la Ley del Consell enumera cinco causas de cese de los Consellers: a) cese del President; b) dimisión aceptada por el President; c) separación decidida libremente por el President; d) incompatibilidad sobrevenida; e) fallecimiento. La separación libre por el President (libre remoción) es una de las características del sistema."
+  },
+  {
+    p: "¿Qué tratamiento protocolario corresponde a los Consellers, según el artículo 30.2 de la Ley del Consell?",
+    ops: ["Muy honorable señor", "Excelentísimo señor", "Honorable señor", "Ilustrísimo señor"],
+    c: 2,
+    exp: "<strong>Respuesta correcta: C.</strong> El art. 30.2 de la Ley del Consell establece que los Consellers tienen el tratamiento de «honorable señor». Esto los distingue del President de la Generalitat, cuyo tratamiento es «muy honorable» (art. 9.a). Conocer los tratamientos protocolarios es habitual en los exámenes de oposición a la GVA."
+  },
+  {
+    p: "Según el artículo 30.1 de la Ley del Consell, ¿qué régimen de incompatibilidades se aplica a los Consellers?",
+    ops: ["Un régimen propio más flexible que el del President, que les permite ejercer actividades académicas", "El mismo régimen de incompatibilidades que el artículo 6 establece para el President de la Generalitat", "El régimen general de incompatibilidades de los empleados públicos de la Generalitat", "Un régimen específico aprobado por Decreto del Consell en cada legislatura"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 30.1 de la Ley del Consell establece que los Consellers están sometidos al mismo régimen de incompatibilidades que el art. 6 establece para el President: incompatibilidad con cualquier función pública que no derive del cargo (salvo la de Diputado de Les Corts) y con cualquier actividad profesional o mercantil."
+  },
+  {
+    p: "¿Cuál de las siguientes afirmaciones sobre el Secretario del Consell es correcta según la Ley del Consell?",
+    ops: ["Es un funcionario de carrera nombrado por concurso de méritos entre el cuerpo superior de administración", "Es nombrado por el President entre los Vicepresidentes o Consellers y levanta acta de los acuerdos del Consell", "Es el Director General de la Presidencia, que ejerce estas funciones por delegación del President", "Es elegido por el Consell en pleno en la primera reunión de cada legislatura"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> Según el art. 15.3 y el art. 22 de la Ley del Consell, el Secretario del Consell es nombrado por el President de entre los Vicepresidentes o Consellers, y su función principal es levantar acta de los acuerdos del Consell. Al ser miembro del Consell, tiene rango político y no es un funcionario de carrera."
+  },
+  {
+    p: "Conforme al artículo 18.c) de la Ley del Consell, ¿qué tipo de norma dicta el Consell cuando ejerce la potestad legislativa delegada por Les Corts?",
+    ops: ["Leyes de urgencia del Consell", "Decretos Legislativos", "Decretos-leyes autonómicos", "Reglamentos de desarrollo legislativo con rango de ley"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 18.c) de la Ley del Consell establece que en el ejercicio de la legislación delegada, el Consell dicta Decretos Legislativos, en los términos y formalidades previstos en la Ley. Esta figura es la traslación autonómica del art. 85 CE, que denomina igualmente Decretos Legislativos a las disposiciones del Gobierno central con legislación delegada."
+  },
+  {
+    p: "Según el artículo 18.f) de la Ley del Consell, ¿con arreglo a qué normas ejerce el Consell la potestad reglamentaria?",
+    ops: ["Con arreglo exclusivamente a las Leyes de la Generalitat aprobadas por Les Corts", "Con arreglo a la Constitución Española, el Estatut d'Autonomia de la Comunitat Valenciana y las Leyes", "Con arreglo a los principios de eficacia y jerarquía normativa sin más restricciones", "Con arreglo a las directrices del Gobierno del Estado en materias de competencia compartida"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 18.f) de la Ley del Consell establece que el Consell ejerce la potestad reglamentaria de acuerdo con la Constitución Española, el Estatut d'Autonomia de la Comunitat Valenciana y las Leyes. Este triple escalón normativo refleja el principio de jerarquía normativa y el sometimiento del ejecutivo autonómico al bloque de constitucionalidad."
+  },
+  {
+    p: "¿Qué función corresponde a los Consellers según el artículo 28.c) de la Ley del Consell en relación con los proyectos de Decreto?",
+    ops: ["Aprobar los proyectos de decreto de su Departamento de forma autónoma, sin necesidad de pasar por el Consell", "Preparar y presentar al Consell los anteproyectos de Ley, propuestas de acuerdo y proyectos de Decreto relativos a su Departamento, y refrendar estos últimos una vez aprobados", "Elevar directamente los proyectos de Decreto al BOE para su publicación sin necesidad de refrendo", "Emitir los Decretos del Consell en materias urgentes, previa autorización verbal del President"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 28.c) de la Ley del Consell establece que los Consellers preparan y presentan al Consell los anteproyectos de Ley, propuestas de acuerdo y proyectos de Decreto relativos a su Departamento, y refrendan los Decretos una vez aprobados. El refrendo del Conseller implica su responsabilidad por el contenido del Decreto en su ámbito competencial."
+  },
+  {
+    p: "Según el artículo 10.d) de la Ley del Consell, ¿quién nombra los altos cargos de la Comunitat Valenciana que las Leyes determinen?",
+    ops: ["El Consell en pleno, a propuesta del Conseller competente por razón de la materia", "El President de la Generalitat", "El Secretario del Consell, como órgano de coordinación ejecutiva", "Les Corts Valencianes, mediante comisión de nombramientos"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 10.d) de la Ley del Consell atribuye al President la función de nombrar los altos cargos de la Comunitat Valenciana que las Leyes determinen. Esta competencia se ejerce como alta representación de la Comunitat y es distinta del nombramiento de los altos cargos de la Administración de la Generalitat, que corresponde al Consell (art. 17.a)."
+  },
+  {
+    p: "¿Qué función tiene el Consell, según el artículo 19.b) de la Ley del Consell, en relación con la cuestión de confianza?",
+    ops: ["Aprobar la cuestión de confianza mediante decreto del Consell sin intervención de Les Corts", "Deliberar sobre la cuestión de confianza que pueda plantear el President ante Les Corts sobre su programa, una decisión política o un proyecto de Ley", "Vetar la cuestión de confianza si no concuerda con el programa de gobierno aprobado en investidura", "Convocar una sesión plenaria de Les Corts para que debata la cuestión de confianza en el plazo de cinco días"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 19.b) de la Ley del Consell establece que el Consell tiene la atribución de deliberar sobre la cuestión de confianza que pueda plantear el President ante Les Corts. Esta deliberación previa garantiza el carácter colegiado de la decisión de arriesgar la continuidad del Gobierno ante el Parlamento."
+  },
+  {
+    p: "Según el artículo 12.1.l) de la Ley del Consell, ¿qué puede plantear el President ante Les Corts previa deliberación del Consell?",
+    ops: ["Una proposición de reforma del Estatuto de Autonomía si obtiene el apoyo de la mayoría del Consell", "La cuestión de confianza sobre su programa, una decisión política o un proyecto de Ley, conforme al art. 30 del Estatut", "La disolución anticipada de Les Corts por razones de gobernabilidad, sin necesidad de acuerdo formal del Consell", "La celebración de un referéndum consultivo sobre materias de competencia exclusiva de la Generalitat"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 12.1.l) de la Ley del Consell establece que el President puede plantear ante Les Corts, en escrito motivado y previa deliberación del Consell, la cuestión de confianza sobre su programa, una decisión política o un proyecto de Ley, conforme al art. 30 del Estatut d'Autonomia, que exige mayoría simple para que se entienda otorgada."
+  },
+  {
+    p: "¿Cuántos Vicepresidentes puede nombrar el President según la Ley del Consell, y qué sucede si nombra Consellers sin cartera?",
+    ops: ["Solo puede nombrar un Vicepresidente; los Consellers sin cartera quedan adscritos al Senado autonómico", "Puede nombrar uno o varios Vicepresidentes; los Consellers sin cartera se integran en la estructura de la Presidencia pudiendo ser asignadas Secretarías Autonómicas y centros directivos", "Solo puede nombrar Vicepresidentes si están vinculados a una Conselleria concreta, sin posibilidad de Consellers sin cartera", "Puede nombrar hasta tres Vicepresidentes como máximo; los Consellers sin cartera no tienen funciones ejecutivas propias pero asisten al Consell"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 15 de la Ley del Consell establece que el President puede nombrar uno o varios Vicepresidentes (sin límite numérico). Según el art. 12.2, cuando el President nombre Vicepresidentes sin Conselleria asignada o Consellers sin cartera, éstos se integran en la estructura de la Presidencia, pudiendo ser adscritas Secretarías Autonómicas y centros directivos para sus funciones."
+  },
+  {
+    p: "¿Qué tipo de normas puede dictar el Consell ante una situación de extraordinaria y urgente necesidad, según el artículo 18.d) de la Ley del Consell?",
+    ops: ["Decretos de urgencia con rango reglamentario de aplicación inmediata", "Decretos-leyes, conforme al artículo 44.4 del Estatut d'Autonomia", "Leyes de emergencia sujetas a ratificación posterior de Les Corts en el plazo de diez días", "Órdenes conjuntas de todas las Consellerías, con efectos suspensivos sobre la legislación vigente"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 18.d) de la Ley del Consell establece que el Consell puede dictar decretos-leyes en casos de extraordinaria y urgente necesidad, conforme al art. 44.4 del Estatut d'Autonomia. Estos decretos-leyes deben ser sometidos a debate y votación en Les Corts para su convalidación o derogación, siguiendo el modelo del art. 86 CE."
+  },
+  {
+    p: "Según el artículo 2.7 de la Ley del Consell, ¿en qué supuestos se procede a una nueva elección del President siguiendo el mismo procedimiento del artículo 2?",
+    ops: ["Solo en caso de dimisión o renuncia voluntaria del President en funciones", "En los casos de renuncia, dimisión, incapacidad, defunción o pérdida de la cuestión de confianza", "Solo en caso de aprobación de una moción de censura o fallecimiento del President", "En cualquier caso de cese del President enumerado en el artículo 8 de la Ley del Consell"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 2.7 de la Ley del Consell enumera los supuestos que obligan a nueva elección presidencial siguiendo el procedimiento del art. 2: renuncia, dimisión, incapacidad, defunción o pérdida de la cuestión de confianza. Nótese que no se incluye la moción de censura, porque en ese caso el candidato de la moción queda automáticamente investido."
+  },
+  {
+    p: "De acuerdo con el artículo 28.d) de la Ley del Consell, ¿qué obligación tienen los Consellers en materia presupuestaria departamental?",
+    ops: ["Aprobar el presupuesto de su Conselleria de forma autónoma y remitirlo directamente a Les Corts", "Formular motivadamente el anteproyecto de Presupuesto de la Conselleria", "Ejecutar el presupuesto de su Conselleria sin modificación posible durante el ejercicio", "Supervisar la auditoría interna del presupuesto de su Departamento mediante la Sindicatura de Comptes"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 28.d) de la Ley del Consell establece que los Consellers tienen la obligación de formular motivadamente el anteproyecto de Presupuesto de la Conselleria. Este anteproyecto es el insumo departamental que el Consell integra en el proyecto de Ley de Presupuestos que se presenta a Les Corts con al menos dos meses de antelación."
+  },
+  {
+    p: "¿Qué función de resolución de conflictos internos atribuye el artículo 28.i) de la Ley del Consell a cada Conseller en el ámbito de su propio Departamento?",
+    ops: ["Resolver los conflictos laborales entre el personal funcionario de su Conselleria y los sindicatos", "Resolver los conflictos de atribuciones que surjan entre distintos órganos y autoridades de su propia Conselleria", "Mediar en los conflictos de competencias entre su Conselleria y otras Consellerías del Consell", "Resolver los recursos de inconstitucionalidad que afecten a la normativa de su Departamento"],
+    c: 1,
+    exp: "<strong>Respuesta correcta: B.</strong> El art. 28.i) de la Ley del Consell atribuye a cada Conseller la función de resolver los conflictos de atribuciones que surjan entre distintos órganos y autoridades de su propia Conselleria. Los conflictos entre Consellerías distintas se resuelven por el President (art. 12.1.j), mientras que los intra-departamentales corresponden al respectivo Conseller."
+  }
+];
+
+// ── ALEATORIZACIÓN ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function prepararPreguntas() {
+  const mezcladas = shuffle(BANCO);
+  return mezcladas.map(q => {
+    const respuestaTextoCorrecta = q.ops[q.c];
+    const opsNuevas = shuffle(q.ops);
+    const nuevoC = opsNuevas.indexOf(respuestaTextoCorrecta);
+    return { p: q.p, ops: opsNuevas, c: nuevoC, exp: q.exp };
+  });
+}
+
+let preguntas = [];
+let respondidas = 0, correctas = 0, incorrectas = 0;
+
+function actualizarBarra() {
+  const pct = preguntas.length ? (respondidas / preguntas.length) * 100 : 0;
+  document.getElementById('barraFill').style.width = pct + '%';
+  document.getElementById('barraNum').textContent = respondidas + ' / ' + preguntas.length;
+  document.getElementById('scoreOk').textContent = '✓ ' + correctas;
+  document.getElementById('scoreKo').textContent = '✗ ' + incorrectas;
+}
+
+function responder(qi, oi) {
+  const q = preguntas[qi];
+  const btns = document.querySelectorAll('[data-qi="' + qi + '"]');
+  btns.forEach(b => b.disabled = true);
+  btns.forEach((b, j) => {
+    if (j === q.c) b.classList.add('correcta');
+    else if (j === oi && oi !== q.c) b.classList.add('incorrecta');
+  });
+  document.getElementById('exp-' + qi).classList.add('visible');
+  respondidas++;
+  if (oi === q.c) correctas++; else incorrectas++;
+  actualizarBarra();
+  if (respondidas === preguntas.length) setTimeout(mostrarResultado, 700);
+}
+
+function mostrarResultado() {
+  const pct = Math.round((correctas / preguntas.length) * 100);
+  document.getElementById('resPunt').innerHTML = correctas + ' <span>/ ' + preguntas.length + '</span>';
+  document.getElementById('resCorr').textContent = correctas;
+  document.getElementById('resIncorr').textContent = incorrectas;
+  document.getElementById('resPct').textContent = pct + '%';
+
+  let txt, col, bg;
+  if (pct >= 90)      { txt = '🏆 Sobresaliente'; col = '#166534'; bg = '#f0fdf4'; }
+  else if (pct >= 75) { txt = '✅ Notable';        col = '#1e3a5f'; bg = '#eff6ff'; }
+  else if (pct >= 60) { txt = '📘 Aprobado';       col = '#92400e'; bg = '#fffbeb'; }
+  else                { txt = '❌ Insuficiente — ¡Sigue practicando!'; col = '#991b1b'; bg = '#fef2f2'; }
+
+  document.getElementById('resCalif').innerHTML =
+    '<span class="calif-badge" style="background:' + bg + ';color:' + col + '">' + txt + '</span>';
+
+  const el = document.getElementById('resultado');
+  el.classList.add('visible');
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function render() {
+  respondidas = 0; correctas = 0; incorrectas = 0;
+  preguntas = prepararPreguntas();
+  actualizarBarra();
+
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '';
+  const letras = ['A','B','C','D'];
+
+  preguntas.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+
+    const opsHTML = q.ops.map((op, j) =>
+      `<button class="opcion" data-qi="${i}" onclick="responder(${i},${j})">
+        <span class="letra">${letras[j]})</span><span>${op}</span>
+      </button>`
+    ).join('');
+
+    card.innerHTML =
+      `<div class="card-num">Pregunta ${i + 1} de ${preguntas.length}</div>
+       <div class="card-pregunta">${q.p}</div>
+       <div class="opciones">${opsHTML}</div>
+       <div class="explicacion" id="exp-${i}">${q.exp}</div>`;
+
+    main.appendChild(card);
+  });
+
+  const sep = document.createElement('div');
+  sep.className = 'divider';
+  sep.textContent = 'Fin del test';
+  main.appendChild(sep);
+
+  const res = document.createElement('div');
+  res.className = 'resultado';
+  res.id = 'resultado';
+  res.innerHTML =
+    `<div class="resultado-eyebrow">Resultado final</div>
+     <h2>Test completado</h2>
+     <div class="resultado-nota" id="resPunt">0 <span>/ 50</span></div>
+     <div id="resCalif"></div>
+     <div class="stats">
+       <div class="stat"><div class="stat-num" id="resCorr" style="color:#166534">0</div><div class="stat-lab">Correctas</div></div>
+       <div class="stat"><div class="stat-num" id="resIncorr" style="color:#991b1b">0</div><div class="stat-lab">Incorrectas</div></div>
+       <div class="stat"><div class="stat-num" id="resPct">0%</div><div class="stat-lab">% aciertos</div></div>
+     </div>
+     <p class="resultado-hint">Desplázate hacia arriba para revisar las explicaciones de cada pregunta.</p>
+     <button class="btn btn-naranja" onclick="render(); window.scrollTo({top:0,behavior:'smooth'})">↺ Repetir con nuevo orden</button>`;
+  main.appendChild(res);
+}
+
+render();
+</script>
+</body>
+</html>
